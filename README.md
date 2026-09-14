@@ -1,3 +1,24 @@
 # findmushroom
 
-This is data science project for helsinki universitys masters project idk. 
+### About app
+This is data science project for helsinki universitys masters course. 
+
+### Installation
+1. pull the repo ```git pull git@github.com:FungusLocus/findmushroom.git ```
+2. go to the project root ```cd findmushroom```
+3. create virtual enviroment ```python -m venv .venv``` (linux)
+4. activate venv ```source .venv/bin/activate```
+5. install requirements ```pip install -r requirements.txt```
+
+### Running the app
+1.``` source .venv/bin/activate ``` 
+2. ```uvicorn app.main:app --reload```
+
+
+### Datasets used
+
+### Architecture
+
+### Machine learning choises
+
+### Some math about how good our model is :D
