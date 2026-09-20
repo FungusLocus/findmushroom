@@ -3,7 +3,7 @@ CREATE TABLE observations (
     species TEXT,
     vernacularName TEXT,
     observationNum INTEGER,
-    observationTime TIMESTAMP,
+    observationTime DATE,
     municipality TEXT,
     biogeographicalProvince TEXT,
     country TEXT,
