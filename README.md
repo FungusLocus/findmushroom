@@ -20,6 +20,14 @@ This is data science project for helsinki universitys masters course.
 
 [Weather data](https://www.ilmatieteenlaitos.fi/suomen-havainnot/asema?station=108040)
 
+### Database set up
+
+1. Install [PostgreSQL](https://www.postgresql.org/download/)
+2. Open pgAdmin
+3. Connect to PostgreSQL with the username and password you made during installation
+4. Create a new database
+5. Open the query tool and execute the content of database/schema.sql
+
 ### Architecture
 - nice little mermaid pic
 
