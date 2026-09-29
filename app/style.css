@@ -1,0 +1,112 @@
+:root {
+  --bg-dark: #1b2a21;          /* Deep forest green */
+  --sidebar-bg: #518e69;     /* Muted forest green panel */
+  --text-light: #f0f4f1;     /* Soft off-white */
+  --accent-brown: #8c5a3c;   /* Earth brown */
+  --accent-hover: #73482f;
+  --border-color: #385242;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  height: 100vh;
+  overflow: hidden; /* Prevents unwanted page scrolling */
+}
+
+/* Layout container split into Sidebar + Map */
+#main-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Left Sidebar Panel */
+#sidebar {
+  width: 360px;               /* Fixed panel width */
+  min-width: 280px;
+  background-color: var(--sidebar-bg);
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  border-right: 2px solid var(--border-color);
+  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.25);
+  z-index: 10000;              /* Keeps sidebar above Leaflet controls if needed */
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  color: #ffffff;
+}
+
+/* Controls layout inside panel */
+#controls {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+label {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #c2d6ca;
+}
+
+select {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
+  background-color: var(--bg-dark);
+  color: var(--text-light);
+  font-size: 1rem;
+  outline: none;
+  cursor: pointer;
+}
+
+select:focus {
+  border-color: var(--accent-brown);
+}
+
+button {
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--accent-brown);
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: var(--accent-hover);
+}
+
+#status {
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  color: #a3c4b1;
+  min-height: 1.2em;
+}
+
+/* Map Section (Fills remaining right area) */
+#map-container {
+  flex: 1;
+  height: 100%;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}

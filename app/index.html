@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fungus Locus</title>
+   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+  <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+  <div id="main-container">
+
+    <!-- Left Sidebar -->
+    <aside id="sidebar">
+      <h1>Mushroom Locator</h1>
+
+      <label for="species-select">Choose a mushroom:</label>
+
+      <select id="species-select">
+        <option value="">-- Select --</option>
+        <option value="Cantharellus cibarius">Keltavahvero</option>
+        <option value="Boletus edulis">Herkkutatti</option>
+        <option value="Lactarius torminosus">Karvarousku</option>
+        <option value="Gyromitra esculenta">Korvasieni</option>
+        <option value="Albatrellus ovinus">Lampaankääpä</option>
+        <option value="Craterellus cornucopioides">Mustatorvisieni</option>
+        <option value="Hygrophorus camarophyllus">Mustavahakas</option>
+        <option value="Lactarius camphoratus">Sikurirousku</option>
+        <option value="Craterellus tubaeformis">Suppilovahvero</option>
+        <option value="Hydnum repandum">Vaaleaorakas</option>
+      </select>
+
+      <button id="show-predictions-btn">Show predictions</button>
+
+      <p id="status"></p>
+    </aside>
+
+    <!-- Right Map -->
+    <main id="map-container">
+      <div id="map"></div>
+    </main>
+
+  </div>
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin="">
+  </script>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
+

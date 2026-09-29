@@ -18,7 +18,6 @@ def spatial_thinning(gdf, size):
 
 # this function creates training dataset for each mushroom. Training set uses other 9 mushrooms as absence data (method: target group background).
 def create_training_set():
-    finland = finnish_coordinates().to_crs(3067)   
     df = get_dataframe()
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["WGS84 E"], df["WGS84 N"]),crs=4326,).to_crs(3067)
     # print(gdf)
@@ -50,12 +49,13 @@ def create_training_set():
         species_datasets[species] = final_df
         # print(final_df['observed'].value_counts())
     
-    # print(species_datasets)
+    print(species_datasets)
         
     return species_datasets
     # Usage: boletus_df = species_datasets['karvarousku']
 
-
+def grids_over_finland():
+    pass
 
 if __name__ == "__main__":
     create_training_set()

@@ -50,7 +50,7 @@ def map_mushroom_names(df):
             fi_name = fi_part.split('(fi)')[0].strip()
             latin_to_finnish[latin_part.strip()] = fi_name
 
-    # print(latin_to_finnish)
+    print(latin_to_finnish)
     # print(len(latin_to_finnish))
 
     return latin_to_finnish
@@ -134,5 +134,7 @@ def plot_observations(): # need to take care of the outliers
 if __name__ == "__main__":
     # df = open_mushroomdata()
     # df = clean_mushroom_data(df)
-    plot_months()
+    # plot_months()
+    df = get_dataframe()
+    map_mushroom_names(df)
     # plot_observations()
