@@ -50,7 +50,7 @@ def map_mushroom_names(df):
             fi_name = fi_part.split('(fi)')[0].strip()
             latin_to_finnish[latin_part.strip()] = fi_name
 
-    print(latin_to_finnish)
+    # print(latin_to_finnish)
     # print(len(latin_to_finnish))
 
     return latin_to_finnish
