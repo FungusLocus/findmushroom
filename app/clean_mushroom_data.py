@@ -3,15 +3,27 @@ import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 
-def get_dataframe():
+def get_geodataframe():
     df = open_mushroomdata()
     df = clean_mushroom_data(df)
+    df = drop_outliers(df)
     return df
 
 def finnish_coordinates():
     finland = gpd.read_file("datasets/gadm41_FIN.gpkg", layer="ADM_ADM_0") 
+    finland = finland.to_crs(3067)
     # print(finland.total_bounds)
     return finland
+
+def drop_outliers(df):
+    finland = finnish_coordinates()
+    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["WGS84 E"], df["WGS84 N"]),crs=4326,).to_crs(3067)
+    if finland.crs != gdf.crs:
+        finland = finland.to_crs(gdf.crs)
+    gdf = gpd.sjoin(gdf, finland, predicate="within")
+    
+    return gdf
+    
 
 def open_mushroomdata():
     # opening each mushroom file and adding them together into one df, returns that df unedited
@@ -103,7 +115,7 @@ def clean_mushroom_data(df):
 
 
 def plot_months():
-    df = get_dataframe()
+    df = get_geodataframe()
     months=['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November',' December']
     monthly_counts = df["Time"].dt.month_name().value_counts().reindex(months)
 
@@ -119,22 +131,21 @@ def plot_months():
     
 def plot_observations(): # need to take care of the outliers
     finland = finnish_coordinates()
-    df = get_dataframe()
-
-    obs_gdf = gpd.GeoDataFrame(df,geometry=gpd.points_from_xy(df["WGS84 E"], df["WGS84 N"]),crs="EPSG:4326")
+    gdf = get_geodataframe()
 
     fig, ax = plt.subplots(figsize=(8, 10))
     finland.plot(ax=ax, color="#f0f0f0", edgecolor="black")
-    obs_gdf.plot(ax=ax, markersize=3, alpha=0.5, color="darkgreen")
+    gdf.plot(ax=ax, markersize=3, alpha=0.5, color="darkgreen")
     ax.set_title("Mushroom observations")
     ax.set_axis_off()
     plt.tight_layout()
     plt.show()
 
+
 if __name__ == "__main__":
     # df = open_mushroomdata()
     # df = clean_mushroom_data(df)
+    df = get_geodataframe()
+    # map_mushroom_names(df)
+    plot_observations()
     # plot_months()
-    df = get_dataframe()
-    map_mushroom_names(df)
-    # plot_observations()
