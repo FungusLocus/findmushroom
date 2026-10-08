@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
-from clean_mushroom_data import get_dataframe, finnish_coordinates
+from clean_mushroom_data import get_geodataframe, finnish_coordinates
 from shapely.geometry import box
 
 
@@ -26,7 +26,7 @@ def spatial_thinning(gdf, size):
 
 # this function creates training dataset for each mushroom. Training set uses other 9 mushrooms as absence data (method: target group background).
 def create_training_set():
-    df = get_dataframe()
+    df = get_geodataframe()
     gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["WGS84 E"], df["WGS84 N"]),crs=4326,).to_crs(3067)
     # print(gdf)
     grid_size=5000
