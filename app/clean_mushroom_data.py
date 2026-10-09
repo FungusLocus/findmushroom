@@ -22,6 +22,8 @@ def drop_outliers(df):
         finland = finland.to_crs(gdf.crs)
     gdf = gpd.sjoin(gdf, finland, predicate="within")
     
+    gdf = gdf.drop(columns=["index_right", 'GID_0', 'COUNTRY'])
+    
     return gdf
     
 
@@ -142,10 +144,12 @@ def plot_observations(): # need to take care of the outliers
     plt.show()
 
 
+
 if __name__ == "__main__":
     # df = open_mushroomdata()
     # df = clean_mushroom_data(df)
-    df = get_geodataframe()
+    # df = get_geodataframe()
     # map_mushroom_names(df)
     plot_observations()
     # plot_months()
+    # print(df)

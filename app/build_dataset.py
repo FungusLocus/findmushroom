@@ -3,6 +3,7 @@ import numpy as np
 import geopandas as gpd
 import matplotlib.pyplot as plt
 from clean_mushroom_data import get_geodataframe, finnish_coordinates
+from clean_weather_data import get_weather_data, get_station_data
 from shapely.geometry import box
 
 
@@ -23,11 +24,35 @@ def spatial_thinning(gdf, size):
 
     return thinned_gdf
 
+def join_datasets():
+    weather = get_weather_data() #not in gdf
+    species = get_geodataframe()
+    stations = get_station_data()
+    
+    # print(weather)
+    # print(species)
+    # print(stations)
+    
+    species_with_station = gpd.sjoin_nearest(species, stations[["name", "geometry"]], how="left", distance_col="distance_meters")
+    species_with_station = species_with_station.rename(columns={'name': 'Station'})
+    # print(species_with_station)
+    
+    df = pd.merge(species_with_station, weather, left_on=['Station', 'Time'], right_on=['station', 'time'], how='inner')
+    # print(df.columns)
+    df = df.drop(columns=['index_right', 'distance_meters', 'time', 'station'])
+    # print(df)
+    
+    # print(df.isnull().sum())
+    df = df.dropna()
+    # print(df.isnull().sum())
+    # print(df)
+    
+    return df
+
 
 # this function creates training dataset for each mushroom. Training set uses other 9 mushrooms as absence data (method: target group background).
 def create_training_set():
-    df = get_geodataframe()
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["WGS84 E"], df["WGS84 N"]),crs=4326,).to_crs(3067)
+    gdf = join_datasets()
     # print(gdf)
     grid_size=5000
     
@@ -44,7 +69,7 @@ def create_training_set():
 
         absence_df = thinned_gdf[thinned_gdf["Vernacular name"] != species].drop_duplicates(subset=['grid_x', 'grid_y']).copy()
         absence_df["observed"] = 0
-        print(absence_df.nunique())
+        # print(absence_df.nunique())
         
         presence_grids = set(zip(presence_df["grid_x"], presence_df["grid_y"]))
         
@@ -62,9 +87,9 @@ def create_training_set():
         # print(final_df['observed'].value_counts())
     
     # print(species_datasets)
+    # print(species_datasets['karvarousku'])
         
     return species_datasets
-    # Usage: boletus_df = species_datasets['karvarousku']
 
 def grids_over_finland():
     finland = finnish_coordinates().to_crs(3067)
@@ -95,3 +120,4 @@ def grids_over_finland():
 if __name__ == "__main__":
     create_training_set()
     # grids_over_finland()
+    # join_datasets()
