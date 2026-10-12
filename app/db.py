@@ -4,6 +4,7 @@ from supabase import create_client
 from dotenv import load_dotenv
 from clean_mushroom_data import get_geodataframe
 from clean_weather_data import get_weather_data, get_station_data
+from ml import make_predictions
 import numpy as np
 import os
 

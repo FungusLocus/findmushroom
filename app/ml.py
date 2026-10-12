@@ -54,6 +54,7 @@ def make_predictions():
     
     print(full_grid)
     full_grid.to_csv("datasets/predictions.csv", index=False)
+    print(full_grid.columns)
     return full_grid
         
 
