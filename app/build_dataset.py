@@ -6,7 +6,10 @@ from clean_mushroom_data import get_geodataframe, finnish_coordinates
 from clean_weather_data import get_weather_data, get_station_data
 from shapely.geometry import box
 
-
+def csv_out(df):
+    df.to_csv("datasets/train.csv", index=False)
+    return
+    
 def create_grid_coordinates(gdf):
     grid_size = 5000
     gdf['grid_x'] = (gdf.geometry.bounds['minx'] // grid_size).astype(int)
@@ -39,14 +42,22 @@ def join_datasets():
     
     df = pd.merge(species_with_station, weather, left_on=['Station', 'Time'], right_on=['station', 'time'], how='inner')
     # print(df.columns)
-    df = df.drop(columns=['index_right', 'distance_meters', 'time', 'station'])
+    # print(df['distance_meters'])
+    # print(df['distance_meters'].max())
+    # print(df['distance_meters'].min())
+    # print(df['distance_meters'].median())
+    # See how many rows have distances greater than certain thresholds
+    df = df.drop(columns=['index_right', 'time', 'station'])
+    # plot_distance_distribution(df) 
     # print(df)
     
     # print(df.isnull().sum())
     df = df.dropna()
     # print(df.isnull().sum())
     # print(df)
-    
+    # print(df.columns)
+    csv_out(df)    
+
     return df
 
 
@@ -87,8 +98,7 @@ def create_training_set():
         # print(final_df['observed'].value_counts())
     
     # print(species_datasets)
-    # print(species_datasets['karvarousku'])
-        
+    # print(species_datasets['karvarousku'].columns)
     return species_datasets
 
 def grids_over_finland():
@@ -116,8 +126,20 @@ def grids_over_finland():
     
     return full_grid
     
+    
+def plot_distance_distribution(df):
+    dist = df['distance_meters'] / 1000
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    n, bins, patches = ax.hist(dist, bins=30, edgecolor='white', linewidth=1.2)
+    ax.set_xlabel('Distance')
+    ax.set_ylabel('Number of Mushroom Observations')
+
+    ax.set_axisbelow(True)
+    plt.tight_layout()
+    plt.show()
 
 if __name__ == "__main__":
-    create_training_set()
+    # create_training_set()
     # grids_over_finland()
-    # join_datasets()
+    join_datasets()

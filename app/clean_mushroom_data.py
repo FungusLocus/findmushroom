@@ -131,6 +131,21 @@ def plot_months():
     plt.show()
     
     
+    
+def plot_observation_distribution():
+    df = get_geodataframe()
+    obs = df['Vernacular name']
+    
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    n, bins, patches = ax.hist(obs, bins=30, edgecolor='white', linewidth=1.2)
+    ax.set_ylabel('Number of Mushroom Observations')
+
+    ax.set_axisbelow(True)
+    plt.tight_layout()
+    plt.show()
+    
+    
 def plot_observations(): # need to take care of the outliers
     finland = finnish_coordinates()
     gdf = get_geodataframe()
@@ -150,6 +165,7 @@ if __name__ == "__main__":
     # df = clean_mushroom_data(df)
     # df = get_geodataframe()
     # map_mushroom_names(df)
-    plot_observations()
+    # plot_observations()
+    plot_observation_distribution()
     # plot_months()
     # print(df)

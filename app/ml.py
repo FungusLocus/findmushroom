@@ -1,35 +1,47 @@
 import sklearn
 import pandas as pd
 import numpy as np
-from sklearn import model_selection
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.linear_model import LogisticRegression
-from sklearn import datasets
-from sklearn.metrics import accuracy_score
+from build_dataset import create_training_set
+from sklearn.metrics import roc_auc_score, average_precision_score
 
-#skeleton for model
 
-def train_model(dataset):
+def train_model():
+    models = {}
+    data = create_training_set()
+    for specie in data:
+        print(specie)
+        X = data[specie][['prec', 'temp', 'prec_7d', 'prec_14d', 'temp_7d', 'temp_14d']]
+        y = data[specie]['observed']
+        sample_weight = 1 / (1 + data[specie]['distance_meters'] / 10000)
+        result = logistic_regression(X, y, sample_weight)
+        models[specie] = result
+    print(models)
 
-    X = dataset['features here']
-    y = dataset['outcomes here']
+        
 
-    #test set size 33% of the whole sample
-    test_size = 0.33
-    
-    #split data
-    X_train, X_test, y_train, y_test =model_selection.train_test_split(X, y, test_size=test_size)
-    
-    #Model instance, classification with logistic regression
+def logistic_regression(X,y,w):
+    test_size = 0.2
+    X_train, X_test, y_train, y_test, w_train, w_test =train_test_split(X, y, w, test_size=test_size)
     model = LogisticRegression(class_weight='balanced')
-    #fit model
-    model.fit(X_train, y_train)
+    model.fit(X_train, y_train, sample_weight=w_train)
     
-    #Evaluate model performance
-    scoring = 'accuracy'
-    results = model_selection.cross_val_score(model, X, y,
-    scoring=scoring)
-    print('Accuracy on validation set: %.2f%% (std = %.2f)' %
-    (results.mean()*100, results.std()))
-    #accuracy on test set
+    probs = model.predict_proba(X_test)[:, 1]
+    print("AUC:", roc_auc_score(y_test, probs))
+    print("PR-AUC:", average_precision_score(y_test, probs))
+    
+    cv_scores = cross_val_score(model, X, y, scoring='roc_auc', params={'sample_weight': w.values})
+    print('CV AUC: %.3f (std = %.3f)' % (cv_scores.mean(), cv_scores.std()))
+    
     result = model.score(X_test, y_test)
     print("Accuracy on test set: %.2f%%" % (result*100.0))
+    return model
+    
+
+        
+
+    
+
+if __name__ == "__main__":
+    train_model()

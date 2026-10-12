@@ -4,7 +4,7 @@ import geopandas as gpd
 
 def get_station_data():
     df = open_station_data()
-    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["latitude"], df["longitude"]),crs=4326,).to_crs(3067)
+    gdf = gpd.GeoDataFrame(df, geometry=gpd.points_from_xy(df["longitude"], df["latitude"]),crs=4326,).to_crs(3067)
     return gdf
 
 def get_weather_data():
@@ -27,8 +27,8 @@ def clean_data():
     weather = weather.sort_values(['station', 'time']).reset_index(drop=True)
     weather['prec_7d'] = weather.groupby('station')['prec'].transform(lambda x: x.rolling(window=7, min_periods=1).sum())
     weather['prec_14d'] = weather.groupby('station')['prec'].transform(lambda x: x.rolling(window=14, min_periods=1).sum())
-    weather['temp_7d_avg'] = weather.groupby('station')['temp'].transform(lambda x: x.rolling(window=7, min_periods=1).mean())
-    weather['temp_14d_avg'] = weather.groupby('station')['temp'].transform(lambda x: x.rolling(window=14, min_periods=1).mean())
+    weather['temp_7d'] = weather.groupby('station')['temp'].transform(lambda x: x.rolling(window=7, min_periods=1).mean())
+    weather['temp_14d'] = weather.groupby('station')['temp'].transform(lambda x: x.rolling(window=14, min_periods=1).mean())
 
     # df = pd.merge(weather,stations[['name', 'latitude', 'longitude']], left_on='station', right_on='name',how='left')
     # df = df.drop(columns=['name'])
