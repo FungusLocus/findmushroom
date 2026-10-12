@@ -36,21 +36,20 @@ def join_datasets():
     # print(species)
     # print(stations)
     
-    species_with_station = gpd.sjoin_nearest(species, stations[["name", "geometry"]], how="left", distance_col="distance_meters")
-    species_with_station = species_with_station.rename(columns={'name': 'Station'})
+    species = filter_weeks(species)
+    
+    species_with_station = gpd.sjoin_nearest(species, stations[["Station", "geometry"]], how="left", distance_col="distance_meters")
     # print(species_with_station)
     
-    df = pd.merge(species_with_station, weather, left_on=['Station', 'Time'], right_on=['station', 'time'], how='inner')
+    df = pd.merge(species_with_station, weather, left_on=['Station', 'Time'], right_on=['Station', 'Time'], how='inner')
     # print(df.columns)
     # print(df['distance_meters'])
     # print(df['distance_meters'].max())
     # print(df['distance_meters'].min())
     # print(df['distance_meters'].median())
     # See how many rows have distances greater than certain thresholds
-    df = df.drop(columns=['index_right', 'time', 'station'])
-    # plot_distance_distribution(df) 
-    # print(df)
-    
+    df = df.drop(columns=['index_right'])
+    # plot_distance_distribution(df)     
     # print(df.isnull().sum())
     df = df.dropna()
     # print(df.isnull().sum())
@@ -103,6 +102,7 @@ def create_training_set():
 
 def grids_over_finland():
     finland = finnish_coordinates().to_crs(3067)
+    stations = get_station_data()
     
     grid_size = 5000
     min_x, min_y, max_x, max_y = finland.total_bounds
@@ -122,11 +122,41 @@ def grids_over_finland():
     
     full_grid = create_grid_coordinates(full_grid)
     full_grid = full_grid.reset_index(drop=True)
-    print(full_grid)
     
-    return full_grid
+    df = gpd.sjoin_nearest(full_grid, stations[["Station", "geometry"]], how="left", distance_col="distance_meters")
+
     
+    return df
+
+def make_prediction_table_for_grids():
+    full_grid = grids_over_finland()
+    weather = get_weather_data()
+    weather = get_weather_data()
+    weekly = weekly_weather_avgs(weather)
+    # print(full_grid) 
+    df = pd.merge(full_grid, weekly, left_on=['Station'], right_on=['Station'], how='left')
+    # print(df)
+    # print(df.columns)
+    df = df.drop(columns=['index_right', 'distance_meters'])
+    # print(df.isna().sum()) 
+    return df
+
+def weekly_weather_avgs(data):
+    df = data.copy()
+    df = filter_weeks(df)
+    df = df.groupby(['Station', 'week'])[['prec', 'temp', 'prec_7d', 'prec_14d', 'temp_7d', 'temp_14d']].mean().reset_index()  
+    return df
+
+def filter_weeks(df):
+    species = get_geodataframe()
+    week_counts = species["Time"].dt.isocalendar().week.value_counts()
+    valid_weeks = week_counts[week_counts >= 50].index.tolist()
     
+    df['week'] = pd.to_datetime(df["Time"]).dt.isocalendar().week
+    df = df[df["week"].isin(valid_weeks)]
+    
+    return df
+
 def plot_distance_distribution(df):
     dist = df['distance_meters'] / 1000
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -142,4 +172,6 @@ def plot_distance_distribution(df):
 if __name__ == "__main__":
     # create_training_set()
     # grids_over_finland()
-    join_datasets()
+    # join_datasets()
+    make_prediction_table_for_grids()
+    # filter_weeks(None)
