@@ -39,7 +39,7 @@ def join_datasets():
     species = filter_weeks(species)
     
     species_with_station = gpd.sjoin_nearest(species, stations[["Station", "geometry"]], how="left", distance_col="distance_meters")
-    # print(species_with_station)
+    species_with_station = species_with_station[~species_with_station.index.duplicated(keep='first')]
     
     df = pd.merge(species_with_station, weather, left_on=['Station', 'Time'], right_on=['Station', 'Time'], how='inner')
     # print(df.columns)
@@ -56,6 +56,7 @@ def join_datasets():
     # print(df)
     # print(df.columns)
     csv_out(df)    
+    # print(df['Station'].nunique())
 
     return df
 
@@ -91,7 +92,6 @@ def create_training_set():
         
         # absence_df = (thinned_gdf[thinned_gdf["Vernacular name"] != species].drop_duplicates(subset=["grid_x", "grid_y"]).copy())
         # absence_df["observed"] = 0
-
         
         species_datasets[species] = final_df
         # print(final_df['observed'].value_counts())
@@ -102,7 +102,8 @@ def create_training_set():
 
 def grids_over_finland():
     finland = finnish_coordinates().to_crs(3067)
-    stations = get_station_data()
+    stations = get_station_data() #112 stations
+    # print(stations['Station'].nunique())
     
     grid_size = 5000
     min_x, min_y, max_x, max_y = finland.total_bounds
@@ -120,21 +121,22 @@ def grids_over_finland():
     full_grid = gpd.sjoin(full_grid, finland[['geometry']], predicate='intersects').drop(columns='index_right')
     # print(full_grid)
     
+    
     full_grid = create_grid_coordinates(full_grid)
     full_grid = full_grid.reset_index(drop=True)
     
     df = gpd.sjoin_nearest(full_grid, stations[["Station", "geometry"]], how="left", distance_col="distance_meters")
-
-    
+    df = df[~df.index.duplicated(keep='first')] 
+    # print(df['Station'].nunique()) # 108 --> 4 stations out
     return df
 
 def make_prediction_table_for_grids():
     full_grid = grids_over_finland()
     weather = get_weather_data()
-    weather = get_weather_data()
     weekly = weekly_weather_avgs(weather)
     # print(full_grid) 
     df = pd.merge(full_grid, weekly, left_on=['Station'], right_on=['Station'], how='left')
+    # print(df['Station'].nunique())
     # print(df)
     # print(df.columns)
     df = df.drop(columns=['index_right', 'distance_meters'])
@@ -145,6 +147,7 @@ def weekly_weather_avgs(data):
     df = data.copy()
     df = filter_weeks(df)
     df = df.groupby(['Station', 'week'])[['prec', 'temp', 'prec_7d', 'prec_14d', 'temp_7d', 'temp_14d']].mean().reset_index()  
+    print('weekly function', df['Station'].nunique())
     return df
 
 def filter_weeks(df):
@@ -152,8 +155,10 @@ def filter_weeks(df):
     week_counts = species["Time"].dt.isocalendar().week.value_counts()
     valid_weeks = week_counts[week_counts >= 50].index.tolist()
     
-    df['week'] = pd.to_datetime(df["Time"]).dt.isocalendar().week
-    df = df[df["week"].isin(valid_weeks)]
+    # df['week'] = pd.to_datetime(df["Time"]).dt.isocalendar().week
+    # df = df[df["week"].isin(valid_weeks)]
+    print(min(valid_weeks))
+    print(max(valid_weeks))
     
     return df
 
@@ -173,5 +178,5 @@ if __name__ == "__main__":
     # create_training_set()
     # grids_over_finland()
     # join_datasets()
-    make_prediction_table_for_grids()
-    # filter_weeks(None)
+    # make_prediction_table_for_grids()
+    filter_weeks(None)

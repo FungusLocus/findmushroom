@@ -20,7 +20,6 @@ def train_model():
     # print(models)
     return models
 
-        
 
 def logistic_regression(X,y,w):
     test_size = 0.2
@@ -52,14 +51,25 @@ def make_predictions():
     for species, model in models.items():
         full_grid[f"prob_{species}"] = model.predict_proba(X)[:, 1]
     
-    print(full_grid)
-    full_grid.to_csv("datasets/predictions.csv", index=False)
-    print(full_grid.columns)
+    # print(full_grid)
+    # full_grid.to_csv("datasets/predictions.csv", index=False)
+    # print(full_grid.columns)
     return full_grid
-        
 
-
+def predictions_for_db():
+    df = make_predictions()
+    # print(df['Station'].nunique())
+    df = df.drop(columns=['geometry', 'Station', 'prec', 'temp', 'prec_7d', 'prec_14d', 'temp_7d', 'temp_14d', ])
+    mushrooms = ['herkkutatti', 'karvarousku', 'keltavahvero', 'korvasieni', 'lampaankääpä', 'mustatorvisieni', 'mustavahakas', 'sikurirousku', 'suppilovahvero', 'vaaleaorakas']
+    columns = [f"prob_{s}" for s in mushrooms]
+    long_df = df.melt(id_vars=['grid_x', 'grid_y', 'week'], value_vars=columns, var_name='species', value_name='probability')
+    long_df['species'] = long_df['species'].str.replace('prob_', '', regex=False)
+    # in Python, check how many land cells exist for one species/week
+    print(long_df[(long_df["species"] == "herkkutatti") & (long_df["week"] == 36)].shape[0])
+    
+    return long_df
     
 
 if __name__ == "__main__":
-    make_predictions()
+    # make_predictions()
+    predictions_for_db()
