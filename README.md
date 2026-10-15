@@ -1,6 +1,6 @@
 # findmushroom
 
-This is data science project for helsinki universitys masters course. We wanted to make an application for predicting mushrooms and specifically where and when would be the optimal time to pick mushrooms. Our aim is to build a model that predicts growth of different mushroom species based on some weather data. The end product would be a website where users could select a mushroom and as a result the website would display a heatmap of Finland and different probabilities of finding said mushroom. Our users could be anyone who is interested in mushrooms or picking mushrooms. 
+This is data science project for helsinki universitys masters course. We wanted to make an application for predicting mushrooms and specifically where and when would be the optimal time to pick mushrooms. Our aim is to build a model that predicts growth of different mushroom species based on some weather data. The end product would be a website where users could select a mushroom and as a result the website would display a heatmap of Finland and different probabilities of finding said mushroom. Our users could be anyone who is interested in mushrooms or picking mushrooms. See more details [here](https://github.com/FungusLocus/findmushroom/wiki/Project-Overview)
 
 ### Installation
 1. pull the repo ```git clone git@github.com:FungusLocus/findmushroom.git ```
@@ -27,5 +27,19 @@ This is data science project for helsinki universitys masters course. We wanted 
 5. Open the query tool and execute the content of database/schema.sql
 
 ### Architecture
-- nice little mermaid pic
+```mermaid
+graph TD
+    subgraph Architecture
+        A[species data] --> |load and clean species data| B[clean_mushroom_data.py]
+        C[weather data] --> |load and clean weather data| D[clean_weather_data.py]
+        B --> E
+        D --> E
+        E --> |combine data and calculate spatial data| build_dataset.py[build_dataset.py]
+        build_dataset.py --> |train model| F[ml.py]
+        F --> |store predictions into db| G[db.py]
+    end
+
+```
+
+
 
