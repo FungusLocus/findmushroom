@@ -32,10 +32,9 @@ graph TD
     subgraph Architecture
         A[species data] --> |load and clean species data| B[clean_mushroom_data.py]
         C[weather data] --> |load and clean weather data| D[clean_weather_data.py]
-        B --> E
-        D --> E
-        E --> |combine data and calculate spatial data| build_dataset.py[build_dataset.py]
-        build_dataset.py --> |train model| F[ml.py]
+        B --> |combine data and calculate spatial data| E[build_dataset.py]
+        D --> |combine data and calculate spatial data| E[build_dataset.py]
+        E[build_dataset.py] --> |train model| F[ml.py]
         F --> |store predictions into db| G[db.py]
     end
 
